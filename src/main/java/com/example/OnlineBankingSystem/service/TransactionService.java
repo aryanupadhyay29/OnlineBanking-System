@@ -1,5 +1,7 @@
 package com.example.OnlineBankingSystem.service;
 
+import com.example.OnlineBankingSystem.exception.AccountNotFoundException;
+import com.example.OnlineBankingSystem.exception.InsufficientBalanceException;
 import com.example.OnlineBankingSystem.model.Account;
 import com.example.OnlineBankingSystem.model.Transaction;
 import com.example.OnlineBankingSystem.repository.AccountRepository;
@@ -16,7 +18,8 @@ public class TransactionService {
     private TransactionRepository transactionRepository;
 
     public String deposit(Long accountId, Double amount){
-        Account account = accountRepository.findById(accountId).orElseThrow();
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found"));
         account.setBalance(account.getBalance() + amount);
         accountRepository.save(account);
 
@@ -31,9 +34,10 @@ public class TransactionService {
     }
 
     public String withdraw(Long accountId, Double amount){
-        Account account = accountRepository.findById(accountId).orElseThrow();
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AccountNotFoundException("Account not found"));
         if(account.getBalance() < amount){
-            return "Insufficient Balance";
+            throw new InsufficientBalanceException("Not enough balance");
         }
         account.setBalance(account.getBalance() - amount);
         accountRepository.save(account);
