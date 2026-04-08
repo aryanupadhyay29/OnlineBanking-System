@@ -1,5 +1,7 @@
 package com.example.OnlineBankingSystem.service;
 
+import com.example.OnlineBankingSystem.exception.InvalidCredentialsException;
+import com.example.OnlineBankingSystem.exception.UserNotFoundException;
 import com.example.OnlineBankingSystem.model.User;
 import com.example.OnlineBankingSystem.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +18,10 @@ public class UserService {
     public User login(String email, String password) {
 
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
 
         if (!user.getPassword().equals(password)) {
-            throw new RuntimeException("Invalid password");
+            throw new InvalidCredentialsException("Invalid password");
         }
 
         return user;
