@@ -18,6 +18,7 @@ public class TransactionService {
     private TransactionRepository transactionRepository;
 
     public String deposit(Long accountId, Double amount){
+        validateAmount(amount);
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found"));
         account.setBalance(account.getBalance() + amount);
@@ -34,6 +35,7 @@ public class TransactionService {
     }
 
     public String withdraw(Long accountId, Double amount){
+        validateAmount(amount);
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException("Account not found"));
         if(account.getBalance() < amount){
@@ -49,5 +51,11 @@ public class TransactionService {
         transactionRepository.save(tx);
 
         return "Withdraw Successful";
+    }
+
+    private void validateAmount(Double amount) {
+        if (amount == null || amount <= 0) {
+            throw new IllegalArgumentException("Amount must be greater than zero");
+        }
     }
 }
